@@ -19,9 +19,15 @@ pipeline {
                 sh 'mvn test'
             }
         }
-        stage('Hello') {
+        stage('Deploy') {
             steps {
-                echo 'Hello World'
+                script{
+                    docker.withRegistry('', 'dockerid') {
+                        def dockerimage = docker.build("lawrenceodedina/gggpipe:${env.BUILD_NUMBER}")
+                        dockerimage.push()
+                        dockerimage.push("latest")
+                    }
+                }
             }
         }
     }
